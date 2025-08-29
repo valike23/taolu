@@ -4,14 +4,14 @@
 
   export let judgeName = "J1"; // default fallback
 
-  let redScore = 0;
-  let blueScore = 0;
+  let redScore: number = 7.0;
+  let blueScore: number = 7.0;
   let socket: Socket;
-  let host = '';
+  let host = "";
 
   async function connectSocket() {
     try {
-      console.log("testing host", host)
+      console.log("testing host", host);
       // Fetch server IP dynamically
       const res = await fetch(`http://${host}:3000/ip`);
       const data = await res.json();
@@ -26,7 +26,8 @@
   }
 
   onMount(async () => {
-    host = location.host.split(':')[0];console.log(host)
+    host = location.host.split(":")[0];
+    console.log(host);
     await connectSocket();
 
     // Get judge name from query param (?name=j1)
@@ -37,37 +38,14 @@
     }
   });
 
-  function sendScoreUpdate(color: "red" | "blue", score: number) {
+  function submitScores() {
     if (!socket) return;
     socket.emit("judge-score", {
       judge: judgeName.toLowerCase(),
-      color,
-      score
+      red: redScore,
+      blue: blueScore
     });
-  }
-
-  function incRed() {
-    redScore++;
-    sendScoreUpdate("red", redScore);
-  }
-
-  function decRed() {
-    if (redScore > 0) {
-      redScore--;
-      sendScoreUpdate("red", redScore);
-    }
-  }
-
-  function incBlue() {
-    blueScore++;
-    sendScoreUpdate("blue", blueScore);
-  }
-
-  function decBlue() {
-    if (blueScore > 0) {
-      blueScore--;
-      sendScoreUpdate("blue", blueScore);
-    }
+    console.log("✅ Scores submitted:", { redScore, blueScore });
   }
 </script>
 
@@ -80,21 +58,38 @@
   <!-- Scores Area -->
   <div class="grid grid-cols-2 gap-6 w-full max-w-4xl flex-1">
     
-    <!-- Red Athlete Controls -->
+    <!-- Red Athlete Input -->
     <div class="flex flex-col items-center justify-center bg-red-900 rounded-2xl p-6 shadow-lg">
-      <button class="btn btn-error text-2xl font-bold mb-4" on:click={incRed}>+1</button>
-      <div class="text-7xl font-mono my-6">{redScore}</div>
-      <button class="btn btn-outline btn-error text-2xl font-bold mt-4" on:click={decRed}>-1</button>
-      <div class="mt-6 text-2xl text-red-200 font-bold">RED</div>
+      <label class="text-2xl text-red-200 font-bold mb-4">RED</label>
+      <input 
+        type="number" 
+        min="0" 
+        max="10" 
+        step="0.1" 
+        bind:value={redScore} 
+        class="text-black text-4xl font-bold w-28 text-center rounded-lg p-2"
+      />
     </div>
     
-    <!-- Blue Athlete Controls -->
+    <!-- Blue Athlete Input -->
     <div class="flex flex-col items-center justify-center bg-blue-900 rounded-2xl p-6 shadow-lg">
-      <button class="btn btn-info text-2xl font-bold mb-4" on:click={incBlue}>+1</button>
-      <div class="text-7xl font-mono my-6">{blueScore}</div>
-      <button class="btn btn-outline btn-info text-2xl font-bold mt-4" on:click={decBlue}>-1</button>
-      <div class="mt-6 text-2xl text-blue-200 font-bold">BLUE</div>
+      <label class="text-2xl text-blue-200 font-bold mb-4">BLUE</label>
+      <input 
+        type="number" 
+        min="0" 
+        max="10" 
+        step="0.1" 
+        bind:value={blueScore} 
+        class="text-black text-4xl font-bold w-28 text-center rounded-lg p-2"
+      />
     </div>
   
   </div>
+
+  <!-- Submit Button -->
+  <button 
+    class="btn btn-success text-2xl font-bold mt-8 px-10 py-4 rounded-2xl"
+    on:click={submitScores}>
+    Submit Scores
+  </button>
 </div>
