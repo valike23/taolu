@@ -7,29 +7,27 @@
   let category = "";
 
   async function loadAthletes() {
-    const res = await fetch("http://localhost:3000/athletes");
+    const res = await fetch("/athletes");
     athletes = await res.json();
   }
 
-  async function addAthlete() {
-    if (!name.trim()) return;
-    const res = await fetch("http://localhost:3000/athletes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, category })
-    });
-    const newAthlete = await res.json();
-    athletes = [...athletes, newAthlete];
-    name = "";
-    category = "";
-  }
+ async function addAthlete() {
+  if (!name.trim()) return;
+  const res = await fetch("/athletes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, category })
+  });
+  const newAthlete = await res.json();
+  athletes = [...athletes, newAthlete];
+  name = "";
+  category = "";
+}
 
-  async function deleteAthlete(id: number) {
-    await fetch(`http://localhost:3000/athletes/${id}`, {
-      method: "DELETE"
-    });
-    athletes = athletes.filter(a => a.id !== id);
-  }
+async function deleteAthlete(id: number) {
+  await fetch(`/athletes/${id}`, { method: "DELETE" });
+  athletes = athletes.filter(a => a.id !== id);
+}
 
   onMount(() => {
     loadAthletes();
@@ -71,7 +69,7 @@
 
   <!-- Athlete List -->
   <div class="w-full max-w-2xl">
-    <table class="table table-zebra w-full text-center">
+    <table class="table w-full text-center">
       <thead class="bg-red-700 text-white">
         <tr>
           <th>ID</th>
@@ -82,7 +80,7 @@
       </thead>
       <tbody class="bg-gray-800">
         {#each athletes as athlete}
-          <tr>
+          <tr class="hover:bg-base-300">
             <td>{athlete.id}</td>
             <td class="font-semibold">{athlete.name}</td>
             <td>{athlete.category || "-"}</td>

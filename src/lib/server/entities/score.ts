@@ -5,7 +5,7 @@ import { Athlete } from "./athlete";
 @Entity()
 export class Score extends Base{
  
-  @Column()
+  @Column({type:'varchar', length:100})
   judge!: string; // "j1", "j2", "j3"
 
   @Column("float")

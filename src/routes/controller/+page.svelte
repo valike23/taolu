@@ -8,7 +8,7 @@
   let currentAthlete: Athlete | null = null;
 
   async function loadAthletes() {
-    const res = await fetch("http://localhost:3000/athletes");
+    const res = await fetch("/athletes");
     athletes = await res.json();
   }
 
@@ -40,6 +40,8 @@
         <option value={i}>{athlete.name}</option>
       {/each}
     </select>
+
+    <button class="btn btn-primary" type="button">Current Athlete</button>
   </div>
 
   <!-- Table -->

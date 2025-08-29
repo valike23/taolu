@@ -6,13 +6,13 @@ import { Score } from "./score";
 export class Athlete extends Base {
  
 
-  @Column()
+  @Column({type: "varchar", length:100})
   name!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true , type: "varchar", length: 100})
   category!: string;
 
-  @Column({ default: false })
+  @Column({ default: false, type:'boolean' })
   isPerforming!: boolean;
 
   @OneToMany(() => Score, (score) => score.athlete)
