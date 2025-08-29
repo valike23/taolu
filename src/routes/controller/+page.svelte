@@ -6,15 +6,18 @@
   let socket: Socket;
   let athletes: Athlete[] = [];
   let currentAthlete: Athlete | null = null;
+  let selectedIndex: number | null = null; // track dropdown selection
 
   async function loadAthletes() {
     const res = await fetch("/athletes");
     athletes = await res.json();
   }
 
-  function setCurrentAthlete(athlete: Athlete) {
-    currentAthlete = athlete;
-    socket.emit("current-athlete", athlete);
+  function setCurrentAthlete() {
+    console.log("the selected index", selectedIndex);
+    if (selectedIndex === null) return;
+    currentAthlete = athletes[selectedIndex];
+    socket.emit("current-athlete", currentAthlete);
   }
 
   onMount(async () => {
@@ -24,6 +27,10 @@
     socket.on("score-updated", (updatedAthletes) => {
       athletes = updatedAthletes;
     });
+
+    socket.on("current-athlete", (athlete) => {
+      currentAthlete = athlete; // sync if server broadcasts current athlete
+    });
   });
 </script>
 
@@ -31,18 +38,31 @@
   <h1 class="text-3xl font-bold mb-6">Judges Summary Screen</h1>
   
   <!-- Athlete Selector -->
-  <div class="mb-6">
-    <select 
-      class="select select-bordered w-full max-w-xs text-black"
-      on:change={(e: any) => setCurrentAthlete(athletes[e.target.value])}>
-      <option disabled selected>Select athlete</option>
-      {#each athletes as athlete, i}
-        <option value={i}>{athlete.name}</option>
-      {/each}
-    </select>
+  <div class="mb-6 flex gap-4 items-center">
+  <!-- Dropdown -->
+  <select 
+    class="select select-bordered w-full max-w-xs text-black"
+    bind:value={selectedIndex}>
+    <option value={null} disabled selected>Select athlete</option>
+    {#each athletes as athlete, i}
+      <option value={i}>{athlete.name}</option>
+    {/each}
+  </select>
 
-    <button class="btn btn-primary" type="button">Current Athlete</button>
+  <!-- Button -->
+  <button class="btn btn-primary" type="button" on:click={setCurrentAthlete}>
+    Set Current Athlete
+  </button>
+</div>
+
+<!-- Display Current Athlete -->
+{#if currentAthlete}
+  <div class="mb-6 text-lg">
+    <span class="font-bold text-yellow-400">Current Athlete:</span>
+    {currentAthlete.name} {#if currentAthlete.category}({currentAthlete.category}){/if}
   </div>
+{/if}
+
 
   <!-- Table -->
   <div class="overflow-x-auto w-full max-w-6xl">
