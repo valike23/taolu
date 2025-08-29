@@ -68,6 +68,11 @@ io.on("connection", (socket: Socket) => {
     io.emit("judge-score", data); // broadcast to all clients
   });
 
+socket.on("current-athlete", (data: any) => {
+    console.log("📩 Send Current Athlete:", data);
+    io.emit("current-athlete", data); // broadcast to all clients
+  });
+
   // Reset event
   socket.on("reset-scores", () => {
     console.log("🧹 Reset command received");
